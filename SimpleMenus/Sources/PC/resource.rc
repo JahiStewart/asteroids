@@ -1,0 +1,48 @@
+#include <winver.h>
+#include "resource.h"
+
+//Define the default icon
+IDI_MAIN ICON "icon.ico"
+
+//Define the default cursor
+IDC_MAIN CURSOR "cursor.cur"
+
+//Define version info
+VS_VERSION_INFO VERSIONINFO
+  FILEVERSION    1,0,0,0
+  PRODUCTVERSION 1,0,0,0
+  FILEFLAGSMASK  VS_FF_DEBUG
+#ifdef _DEBUG
+  FILEFLAGS VS_FF_DEBUG
+#else
+  FILEFLAGS 0x0L
+#endif
+  FILEOS VOS__WINDOWS32
+  FILETYPE VFT_APP
+  FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "Webfoot Technologies, Inc.\0"
+            VALUE "FileDescription", "Mahjong Solitaire\0"
+            VALUE "FileVersion", "1, 0, 0, 0\0"
+            VALUE "InternalName", "Mahjong Solitaire\0"
+            VALUE "LegalCopyright", "© 2013 Webfoot Technologies, Inc.\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "MahjongSolitaire.exe\0"
+#ifdef _DEBUG
+            VALUE "PrivateBuild", "Debug Build. Do NOT Distribute!\0"
+#endif
+            VALUE "ProductName", "Mahjong Solitaire\0"
+            VALUE "ProductVersion", "1, 0, 0, 0\0"
+//            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
