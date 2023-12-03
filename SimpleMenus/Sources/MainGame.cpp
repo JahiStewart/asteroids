@@ -7,6 +7,8 @@
 #include <array>
 #include <cstdio>
 
+#include "Props.h"
+
 /*Next Objective:
 Make score board
 Fix step collision to avoid "over stepping"
