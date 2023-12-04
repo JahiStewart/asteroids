@@ -29,7 +29,9 @@
     <ClInclude Include="..\MenuState.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="Props.h" />
+    <ClInclude Include="Props.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

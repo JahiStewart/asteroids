@@ -1,11 +1,12 @@
 #include "Frog.h"
-#include "MainGame.h"
-#include "MainUpdate.h"
 
 #include <random>
 #include <string>
 #include <array>
 #include <cstdio>
+#include <map>
+
+#include <Props.h>
 
 using namespace Webfoot;
 
@@ -103,7 +104,7 @@ Ball::Ball() {
 
 }
 //------------------------------------------------------------------------------
-void Ball::Update(unsigned int dt, Paddle *paddles[2])
+void Ball::Update(unsigned int dt, Paddle *paddles[2], Scoreboard* scoreboard)
 {
 	//need mouse object
 	//need window object
@@ -135,7 +136,7 @@ void Ball::Update(unsigned int dt, Paddle *paddles[2])
 		step = 8;
 	}
 	Move(x, y);
-	Bounce(paddles);
+	Bounce(paddles, scoreboard);
 };
 //hit paddle
 boolean Ball::HitPaddle(Paddle* paddle)
@@ -159,7 +160,7 @@ boolean Ball::IsCollision(Paddle *paddles[2])
 	}
 	return false;
 }
-void Ball::Bounce(Paddle *paddles[2]){
+void Ball::Bounce(Paddle *paddles[2], Scoreboard* scoreboard){
 	if (br.y >= SCREEN_HEIGHT_DEFAULT) {
 		velocity.y = -1;
 	}

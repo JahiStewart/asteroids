@@ -1,8 +1,30 @@
-﻿Build started 12/3/2023 1:12:37 PM.
+﻿Build started 12/4/2023 1:09:28 PM.
      1>Project "C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\SimpleMenusPCVS2013.vcxproj" on node 2 (Build target(s)).
-     1>C:\Program Files (x86)\MSBuild\Microsoft\VisualStudio\v12.0\CodeAnalysis\Microsoft.CodeAnalysis.targets(214,5): error MSB4175: The task factory "CodeTaskFactory" could not be loaded from the assembly "C:\Program Files (x86)\MSBuild\12.0\bin\Microsoft.Build.Tasks.v12.0.dll". Cannot execute a program. The command being executed was "C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe" /noconfig /fullpaths @"C:\Users\jahis\AppData\Local\Temp\eo5g30f2.cmdline".
-     1>Done Building Project "C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\SimpleMenusPCVS2013.vcxproj" (Build target(s)) -- FAILED.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I. /I..\ /IC:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\FrogSrc\PC /IC:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\FrogSrc /IC:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\FrogSrc\ZLib /IC:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\FrogSrc\TinyThread /IC:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\FrogSrc\GLEW\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D NOMINMAX /D _USING_V110_SDK71_ /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\MainGame.cpp ..\MainMenu.cpp ..\Props.cpp
+         Props.cpp
+     1>c:\users\jahis\documents\2021_files\semester_7\video_game_programming\asteroids\simplemenus\sources\props.cpp(32): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\jahis\documents\2021_files\semester_7\video_game_programming\asteroids\simplemenus\sources\props.cpp(35): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\jahis\documents\2021_files\semester_7\video_game_programming\asteroids\simplemenus\sources\props.cpp(38): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\jahis\documents\2021_files\semester_7\video_game_programming\asteroids\simplemenus\sources\props.cpp(44): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\jahis\documents\2021_files\semester_7\video_game_programming\asteroids\simplemenus\sources\props.cpp(45): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+         MainGame.cpp
+         Generating Code...
+         Compiling...
+         MainMenu.cpp
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\Debug\SimpleMenusD.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\FrogSrc/PC FrogPCVS2013D.lib OtherLibrariesPCVS2013D.lib Xinput.lib opengl32.lib openal32.lib winmm.lib dbghelp.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\Debug\SimpleMenusD.pdb" /SUBSYSTEM:WINDOWS,"5.01" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\Debug\SimpleMenusD.lib" /MACHINE:X86 Debug\resource.res
+         Debug\MainGame.obj
+         Debug\MainMenu.obj
+         Debug\MainUpdate.obj
+         Debug\MenuState.obj
+         Debug\Props.obj
+         Debug\MainPC.obj
+            Creating library C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\Debug\SimpleMenusD.lib and object C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\Debug\SimpleMenusD.exp
+         SimpleMenusPCVS2013.vcxproj -> C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\Debug\SimpleMenusD.exe
+     1>Done Building Project "C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\SimpleMenusPCVS2013.vcxproj" (Build target(s)).
 
-Build FAILED.
+Build succeeded.
 
-Time Elapsed 00:00:00.09
+Time Elapsed 00:00:05.78
