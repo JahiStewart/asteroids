@@ -52,10 +52,7 @@ MainGame MainGame::instance;
 MainGame::MainGame()
 {
    paddle1 = NULL;
-   paddle2 = NULL;
-   paddles[2] = NULL;
    player1 = NULL;
-   player2 = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -67,23 +64,16 @@ void MainGame::Init()
 
    paddle1 = frog_new Paddle();
    paddle1->Init("ship", 50, NULL, 0, 0, 8, dt);
-   paddle2 = frog_new Paddle();
-   paddle2->Init("debris1", 1000, NULL, 0, 0, 8, dt);
-   Paddle* paddles[2] = {paddle1, paddle2};
 
    scoreboard = frog_new Scoreboard();
-   scoreboard->Init(paddle1, paddle2, dt);
 
    for (int i = 0; i < 5; ++i) {
 	   auto ball = frog_new Ball();
-	   ball->Init("debris2", NULL, 500+i*50, 1, -1, 8, dt, paddles, scoreboard);
+	   ball->Init("debris2", NULL, 500+i*50, 1, -1, 8, dt);
    }
 
    player1 = frog_new PC();
    player1->Init(paddle1, inputs); 
-
-   player2 = frog_new PC();
-   player2->Init(paddle2, inputs);
 
    
 }
@@ -102,8 +92,6 @@ void MainGame::Deinit()
 	}
 	frog_delete player1;
 	player1 = NULL;
-	frog_delete player2;
-	player2 = NULL;
 	frog_delete scoreboard;
 	scoreboard = NULL;
 }
@@ -123,8 +111,6 @@ void MainGame::Update()
 
    unsigned int dt = theClock->LoopDurationGet();
 
-   Paddle* paddles[2] = { paddle1, paddle2};
-
 
    for (Ball* ball : Ball::balls) {
 	   if (ball){
@@ -132,7 +118,6 @@ void MainGame::Update()
 	   }
    }
    player1->Update(dt);
-   player2->Update(dt);
 
    // Return to the previous menu if the escape key is pressed.
    if(!theStates->StateChangeCheck() && theKeyboard->KeyJustPressed(KEY_ESCAPE))
@@ -153,9 +138,6 @@ void MainGame::Draw()
 	   }
    }
    paddle1->Draw(dt);
-   paddle2->Draw(dt);
-   scoreboard->score1->Draw(dt);
-   scoreboard->score2->Draw(dt);
 }
 
 //==============================================================================

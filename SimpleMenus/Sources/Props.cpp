@@ -109,14 +109,16 @@ Ball::Ball() {
 
 }
 std::vector<Ball*> Ball::balls;
-void Ball::Init(const char* file_name, int x, int y, int velocity_x, int velocity_y, float step, unsigned int dt,
-	Paddle *paddles[2], Scoreboard* scoreboard)
+void Ball::Init(const char* file_name, int x, int y, int velocity_x, int velocity_y, float step, unsigned int dt)
 {
+	
 	Prop::Init(file_name, x, y, velocity_x, velocity_y, step, dt);
+	/*
 	for (int i = 0; i < 2; ++i) {
 		this->paddles[i] = paddles[i];
 	}
 	this->scoreboard = scoreboard;
+	*/
 }
 
 //------------------------------------------------------------------------------
@@ -132,52 +134,13 @@ void Ball::Update(unsigned int dt)
 	old = Point2F::Create(position.x, position.y);
 	x = step * velocity.x;
 	y = step * velocity.y;
-
-	Move(x, 0);
-	x_state = IsCollision(paddles);
-	Move(-x, 0);
-
-	Move(0, y);
-	y_state = IsCollision(paddles);
-	Move(0, -y);
-	//Final Move
-	if (x_state) {
-		x *= -1;
-		velocity.x *= -1;
-		step = 8;
-	}
-	if (y_state) {
-		y *= -1;
-		velocity.y *= -1;
-		step = 8;
-	}
 	Move(x, y);
 	Bounce(dt);
 	sprite->RotationSet(sprite->RotationGet() + 1);
 
 };
 //hit paddle
-boolean Ball::HitPaddle(Paddle* paddle)
-{
-	return (
-		br.x > paddle->tl.x &&
-		paddle->br.x > tl.x &&
-		br.y > paddle->tl.y &&
-		paddle->br.y > tl.y
-		);
 
-}
-boolean Ball::IsCollision(Paddle *paddles[2])
-{
-	for (int i = 0; i < 2; ++i) {
-
-		Paddle* paddle = paddles[i];
-		if (paddle != NULL && HitPaddle(paddle)){
-			return true;
-		}
-	}
-	return false;
-}
 void Ball::Bounce(unsigned int dt){
 	//wrap around
 	if (position.x > SCREEN_WIDTH_DEFAULT) {

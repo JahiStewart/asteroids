@@ -72,18 +72,10 @@ namespace Webfoot {
 	public:
 		Ball();
 		static std::vector<Ball*> balls;
-		void Init(const char* file_name, int x, int y, int velocity_x, int velocity_y, float step, unsigned int dt,
-			Paddle *paddles[2], Scoreboard* scoreboard);
+		void Init(const char* file_name, int x, int y, int velocity_x, int velocity_y, float step, unsigned int dt);
 		/// Bounce the ball
 		void Bounce(unsigned int dt);
 		void Update(unsigned int dt);
-		boolean HitPaddle(Paddle* paddle);
-		//hit paddle
-		boolean IsCollision(Paddle *paddles[2]);
-		//check with HitPaddle
-		//Next Update: in each 1pt step in line of movement
-
-		Paddle *paddles[2];
 		Scoreboard* scoreboard;
 	};
 	class Paddle : public Prop{

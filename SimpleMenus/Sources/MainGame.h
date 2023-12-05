@@ -41,11 +41,7 @@ protected:
 
    /// The ball that bounces around the screen.
    Paddle* paddle1;
-   Paddle* paddle2;
-   Paddle* paddles[2];//Curently doesn't work(values would become null in main update)
-
    PC* player1;
-   PC* player2;
 };
 
 MainGame* const theMainGame = &MainGame::instance;
