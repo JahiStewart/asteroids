@@ -40,8 +40,11 @@ void Prop::Init(const char* file_name, int x, int y, int velocity_x, int velocit
 
 	w = size.x / 2;
 	h = size.y / 2;
+	
 	br = Point2F::Create(x + w, y + h);
 	tl = Point2F::Create(x - w, y - h);
+	
+
 	velocity.x = velocity_x;
 	velocity.y = velocity_y;
 	this->step = step;
@@ -102,8 +105,10 @@ void Prop::Draw(unsigned int dt)
 
 Ball::Ball() {
 	sprite = NULL;
+	balls.push_back(this);
 
 }
+std::vector<Ball*> Ball::balls;
 void Ball::Init(const char* file_name, int x, int y, int velocity_x, int velocity_y, float step, unsigned int dt,
 	Paddle *paddles[2], Scoreboard* scoreboard)
 {
@@ -174,24 +179,19 @@ boolean Ball::IsCollision(Paddle *paddles[2])
 	return false;
 }
 void Ball::Bounce(unsigned int dt){
-	if (br.y >= SCREEN_HEIGHT_DEFAULT) {
-		velocity.y = -1;
+	//wrap around
+	if (position.x > SCREEN_WIDTH_DEFAULT) {
+		Teleport(0, position.y, dt);
 	}
-	else if (tl.y <= 0) {
-		velocity.y = 1;
+	else if (position.x < 0) {
+		Teleport(SCREEN_WIDTH_DEFAULT, position.y, dt);
 	}
-	if (br.x >= SCREEN_WIDTH_DEFAULT || tl.x <= 0){
-		if (br.x >= SCREEN_WIDTH_DEFAULT) {
-			velocity.x = -1;
-			paddles[1]->score++;
-		}
-		else if (tl.x <= 0) {
-			velocity.x = 1;
-			paddles[0]->score++;
-		}
-		scoreboard->Update(dt);
-		Teleport(SCREEN_WIDTH_DEFAULT / 2, SCREEN_HEIGHT_DEFAULT / 2, dt);
-		step = 2;
+
+	if (position.y > SCREEN_HEIGHT_DEFAULT) {
+		Teleport(position.x, 0, dt);
+	}
+	else if (position.y < 0) {
+		Teleport(position.x, SCREEN_HEIGHT_DEFAULT, dt);
 	}
 
 };
@@ -213,7 +213,7 @@ boolean Paddle::OutBounds()
 //------------------------------------------------------------------------------
 Controls::Controls() {};
 PC::PC() {};
-void PC::Init(Prop* actor, std::map<KeyCode, std::array<int, 2>> inputs)
+void PC::Init(Prop* actor, std::map<KeyCode, std::array<int, 3>> inputs)
 {
 	this->actor = actor;
 	this->inputs = inputs;
@@ -228,11 +228,25 @@ void PC::Update(unsigned int dt)
 		p.first; //key
 		p.second;//value
 		if (theKeyboard->KeyPressed(p.first)){
-			x = p.second[0] * step;
-			y = p.second[1] * step;
-			actor->Move(x, y);
-			if (actor->OutBounds()){ actor->Move(-x, -y); }
+			switch (p.second[2]) {
+			case 0://move
+				x = p.second[0] * step;
+				y = p.second[1] * step;
+				actor->Move(x, y);
+				if (actor->OutBounds()){ actor->Move(-x, -y); }
+				break;
+			case 1://rotate
+				if (auto *sprite = dynamic_cast<Sprite *>(actor->sprite))
+				{
+					sprite->RotationSet(sprite->RotationGet() + 5 * p.second[0]);
+				}
+				break;
+			case 2:
+				int num = 0;
+				break;
+			}
 		}
+		
 	}
 
 }

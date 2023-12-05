@@ -71,6 +71,7 @@ namespace Webfoot {
 	class Ball : public Prop{
 	public:
 		Ball();
+		static std::vector<Ball*> balls;
 		void Init(const char* file_name, int x, int y, int velocity_x, int velocity_y, float step, unsigned int dt,
 			Paddle *paddles[2], Scoreboard* scoreboard);
 		/// Bounce the ball
@@ -105,10 +106,10 @@ namespace Webfoot {
 	class PC : public Controls{
 	public:
 		PC();
-		void Init(Prop* actor, std::map<KeyCode, std::array<int, 2>> inputs);
+		void Init(Prop* actor, std::map<KeyCode, std::array<int, 3>> inputs);
 		void Update(unsigned int dt);
 	protected:
-		std::map<KeyCode, std::array<int, 2>> inputs;
+		std::map<KeyCode, std::array<int, 3>> inputs;
 	};
 	class COM : public Controls{
 	public:

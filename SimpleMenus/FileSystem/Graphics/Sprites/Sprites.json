@@ -15,5 +15,37 @@
         "FrameRate": 4,
         "Origin": "Center",
         "PlayType": "Loop"
+    },
+    "ship":
+    {
+        "Filename": "Sprites/ship",
+        "FrameCount": 8,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "debris1":
+    {
+        "Filename": "Sprites/debris1",
+        "FrameCount": 8,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "debris2":
+    {
+        "Filename": "Sprites/debris2",
+        "FrameCount": 8,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "bullet":
+    {
+        "Filename": "Sprites/bullet",
+        "FrameCount": 8,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
     }
 }

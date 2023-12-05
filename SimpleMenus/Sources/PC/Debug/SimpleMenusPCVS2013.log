@@ -1,4 +1,4 @@
-﻿Build started 12/5/2023 9:28:03 AM.
+﻿Build started 12/5/2023 1:30:53 PM.
      1>Project "C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\SimpleMenusPCVS2013.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I. /I..\ /IC:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\FrogSrc\PC /IC:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\FrogSrc /IC:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\FrogSrc\ZLib /IC:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\FrogSrc\TinyThread /IC:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\FrogSrc\GLEW\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D NOMINMAX /D _USING_V110_SDK71_ /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\Props.cpp
@@ -6,8 +6,8 @@
      1>c:\users\jahis\documents\2021_files\semester_7\video_game_programming\asteroids\simplemenus\sources\props.cpp(33): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
      1>c:\users\jahis\documents\2021_files\semester_7\video_game_programming\asteroids\simplemenus\sources\props.cpp(36): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
      1>c:\users\jahis\documents\2021_files\semester_7\video_game_programming\asteroids\simplemenus\sources\props.cpp(39): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\jahis\documents\2021_files\semester_7\video_game_programming\asteroids\simplemenus\sources\props.cpp(46): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\jahis\documents\2021_files\semester_7\video_game_programming\asteroids\simplemenus\sources\props.cpp(47): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\jahis\documents\2021_files\semester_7\video_game_programming\asteroids\simplemenus\sources\props.cpp(48): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\jahis\documents\2021_files\semester_7\video_game_programming\asteroids\simplemenus\sources\props.cpp(49): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\Debug\SimpleMenusD.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\FrogSrc/PC FrogPCVS2013D.lib OtherLibrariesPCVS2013D.lib Xinput.lib opengl32.lib openal32.lib winmm.lib dbghelp.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\Debug\SimpleMenusD.pdb" /SUBSYSTEM:WINDOWS,"5.01" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\jahis\Documents\2021_files\semester_7\video_game_programming\asteroids\SimpleMenus\Sources\PC\Debug\SimpleMenusD.lib" /MACHINE:X86 Debug\resource.res
          Debug\MainGame.obj
@@ -21,4 +21,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.20
+Time Elapsed 00:00:04.04

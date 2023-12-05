@@ -13,6 +13,7 @@
 Make score board
 Fix step collision to avoid "over stepping"
 */
+
 using namespace Webfoot;
 Scoreboard* scoreboard = nullptr;
 /*
@@ -24,11 +25,21 @@ std::map<KeyCode, int[2]> inputs2 = {
 };
 /*/
 // Create and initialize the ball.
-std::map<KeyCode, std::array<int, 2>> inputs = {
-	{ KEY_RIGHT, { { 1, 0 } } },
-	{ KEY_LEFT, { { -1, 0 } } },
-	{ KEY_UP, { { 0, -1 } } },
-	{ KEY_DOWN, { { 0, 1 } } }
+
+std::map<KeyCode, std::array<int, 3>> inputs = {
+	/*Third value is type(for now)
+	0-move
+	1-rotate
+	2-fire
+	3-thrust
+	*/
+	{ KEY_RIGHT, { { 1, 0 , 0} } },
+	{ KEY_LEFT, { { -1, 0, 0 } } },
+	{ KEY_UP, { { 0, -1, 0} } },
+	{ KEY_DOWN, { { 0, 1, 0} } },
+
+	{ KEY_SPACE, { { 1, 0, 1} } }
+
 };
 MainGame MainGame::instance;
 
@@ -40,7 +51,6 @@ MainGame MainGame::instance;
 //-----------------------------------------------------------------------------
 MainGame::MainGame()
 {
-   ball = NULL;
    paddle1 = NULL;
    paddle2 = NULL;
    paddles[2] = NULL;
@@ -56,22 +66,24 @@ void MainGame::Init()
    unsigned int dt = theClock->LoopDurationGet();
 
    paddle1 = frog_new Paddle();
-   paddle1->Init("paddle", 50, NULL, 0, 0, 8, dt);
+   paddle1->Init("ship", 50, NULL, 0, 0, 8, dt);
    paddle2 = frog_new Paddle();
-   paddle2->Init("paddle", 1000, NULL, 0, 0, 8, dt);
+   paddle2->Init("debris1", 1000, NULL, 0, 0, 8, dt);
    Paddle* paddles[2] = {paddle1, paddle2};
 
    scoreboard = frog_new Scoreboard();
    scoreboard->Init(paddle1, paddle2, dt);
 
-   ball = frog_new Ball();
-   ball->Init("clock", NULL, NULL, 1, -1, 8, dt, paddles, scoreboard);
+   for (int i = 0; i < 5; ++i) {
+	   auto ball = frog_new Ball();
+	   ball->Init("debris2", NULL, 500+i*50, 1, -1, 8, dt, paddles, scoreboard);
+   }
 
    player1 = frog_new PC();
    player1->Init(paddle1, inputs); 
 
-   player2 = frog_new COM();
-   player2->Init(paddle2, ball);
+   player2 = frog_new PC();
+   player2->Init(paddle2, inputs);
 
    
 }
@@ -113,7 +125,12 @@ void MainGame::Update()
 
    Paddle* paddles[2] = { paddle1, paddle2};
 
-   ball->Update(dt);
+
+   for (Ball* ball : Ball::balls) {
+	   if (ball){
+		   ball->Update(dt);
+	   }
+   }
    player1->Update(dt);
    player2->Update(dt);
 
@@ -130,7 +147,11 @@ void MainGame::Update()
 void MainGame::Draw()
 {
    unsigned int dt = theClock->LoopDurationGet();
-   ball->Draw(dt);
+   for (Ball* ball : Ball::balls) {
+	   if (ball){
+		   ball->Draw(dt);
+	   }
+   }
    paddle1->Draw(dt);
    paddle2->Draw(dt);
    scoreboard->score1->Draw(dt);
