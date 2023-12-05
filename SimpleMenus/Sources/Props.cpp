@@ -13,19 +13,20 @@ using namespace Webfoot;
 Prop::Prop()
 {
 	// Initialize pointers to NULL for safety.
-	image = NULL;
+	sprite = NULL;
 	props.push_back(this);
 }
 std::vector<Prop*> Prop::props;
 //------------------------------------------------------------------------------
 
-void Prop::Init(const char* image_file, int x, int y, int velocity_x, int velocity_y, float step)
+void Prop::Init(const char* file_name, int x, int y, int velocity_x, int velocity_y, float step, unsigned int dt)
 {
 	Point2F center;
 	float w, h;
 	// Load the image of the ball.
-	image = theImages->Load(image_file);//!
-	size = image->SizeGet();//width, height
+	sprite = frog_new Sprite();
+	sprite->Init("Sprites/Sprites", file_name);
+	size = sprite->SizeGet(dt);//width, height
 
 	center = Point2F::Create(theScreen->SizeGet() / 2);
 	if (x == NULL){
@@ -51,10 +52,9 @@ void Prop::Init(const char* image_file, int x, int y, int velocity_x, int veloci
 void Prop::Deinit()
 {
 	// Unload the image of the ball.
-	if (image)
+	if (sprite)
 	{
-		theImages->Unload(image);
-		image = NULL;
+		SmartDeinitDelete(sprite);
 	}
 }
 
@@ -78,10 +78,10 @@ void Prop::Move(float x, float y){
 	tl.y += y;
 }
 
-void Prop::Teleport(float x, float y){
+void Prop::Teleport(float x, float y, unsigned int dt){
 	position.x = x;
 	position.y = y;
-	size = image->SizeGet();
+	size = sprite->SizeGet(dt);
 	float w;
 	float h;
 	w = size.x / 2;
@@ -92,19 +92,30 @@ void Prop::Teleport(float x, float y){
 BOOLEAN Prop::OutBounds() { return false; }
 //------------------------------------------------------------------------------
 
-void Prop::Draw()
+void Prop::Draw(unsigned int dt)
 {
 	// The center of the ball is in the center of the image, so use an offset.
-	image->Draw(position - (Point2F::Create(image->SizeGet()) / 2.0f));
+	sprite->PositionSet(position);
+	sprite->Draw();
 }
 
 
 Ball::Ball() {
-	image = NULL;
+	sprite = NULL;
 
 }
+void Ball::Init(const char* file_name, int x, int y, int velocity_x, int velocity_y, float step, unsigned int dt,
+	Paddle *paddles[2], Scoreboard* scoreboard)
+{
+	Prop::Init(file_name, x, y, velocity_x, velocity_y, step, dt);
+	for (int i = 0; i < 2; ++i) {
+		this->paddles[i] = paddles[i];
+	}
+	this->scoreboard = scoreboard;
+}
+
 //------------------------------------------------------------------------------
-void Ball::Update(unsigned int dt, Paddle *paddles[2], Scoreboard* scoreboard)
+void Ball::Update(unsigned int dt)
 {
 	//need mouse object
 	//need window object
@@ -136,7 +147,9 @@ void Ball::Update(unsigned int dt, Paddle *paddles[2], Scoreboard* scoreboard)
 		step = 8;
 	}
 	Move(x, y);
-	Bounce(paddles, scoreboard);
+	Bounce(dt);
+	sprite->RotationSet(sprite->RotationGet() + 1);
+
 };
 //hit paddle
 boolean Ball::HitPaddle(Paddle* paddle)
@@ -160,7 +173,7 @@ boolean Ball::IsCollision(Paddle *paddles[2])
 	}
 	return false;
 }
-void Ball::Bounce(Paddle *paddles[2], Scoreboard* scoreboard){
+void Ball::Bounce(unsigned int dt){
 	if (br.y >= SCREEN_HEIGHT_DEFAULT) {
 		velocity.y = -1;
 	}
@@ -176,8 +189,8 @@ void Ball::Bounce(Paddle *paddles[2], Scoreboard* scoreboard){
 			velocity.x = 1;
 			paddles[0]->score++;
 		}
-		scoreboard->Update();
-		Teleport(SCREEN_WIDTH_DEFAULT / 2, SCREEN_HEIGHT_DEFAULT / 2);
+		scoreboard->Update(dt);
+		Teleport(SCREEN_WIDTH_DEFAULT / 2, SCREEN_HEIGHT_DEFAULT / 2, dt);
 		step = 2;
 	}
 
@@ -185,7 +198,7 @@ void Ball::Bounce(Paddle *paddles[2], Scoreboard* scoreboard){
 //------------------------------------------------------------------------------
 Paddle::Paddle()
 {
-	image = NULL;
+	sprite = NULL;
 	score = 0;
 }
 boolean Paddle::OutBounds()
@@ -263,29 +276,29 @@ void COM::Update(unsigned int dt)
 }
 //------------------------------------------------------------------------------
 Scoreboard::Scoreboard(){}
-void Scoreboard::Init(Paddle* paddle1, Paddle* paddle2)
+void Scoreboard::Init(Paddle* paddle1, Paddle* paddle2, unsigned int dt)
 {
 	this->paddle1 = paddle1;
 	this->paddle2 = paddle2;
 
 	score1 = frog_new Prop();
-	score1->Init("numbers/00", SCREEN_WIDTH_DEFAULT / 2 - 50, 50, 0, 0, 0);
+	score1->Init("numbers/00", SCREEN_WIDTH_DEFAULT / 2 - 50, 50, 0, 0, 0, dt);
 	score2 = frog_new Prop();
-	score2->Init("numbers/00", SCREEN_WIDTH_DEFAULT / 2 + 50, 50, 0, 0, 0);
+	score2->Init("numbers/00", SCREEN_WIDTH_DEFAULT / 2 + 50, 50, 0, 0, 0, dt);
 }
-void Scoreboard::Update(){
+void Scoreboard::Update(unsigned int dt){
 	if (paddle1->score > 9 || paddle2->score > 9) {
 		paddle1->score = 0;
 		paddle2->score = 0;
 	}
-	UpdateScore(score1, paddle1, 1);
-	UpdateScore(score2, paddle2, -1);
+	UpdateScore(score1, paddle1, 1, dt);
+	UpdateScore(score2, paddle2, -1, dt);
 }
-void Scoreboard::UpdateScore(Prop* &score, Paddle* paddle, int side){
-	score->Teleport(-100, -100);//Into the backrooms
+void Scoreboard::UpdateScore(Prop* &score, Paddle* paddle, int side, unsigned int dt){
+	score->Teleport(-100, -100, dt);//Into the backrooms
 	score = frog_new Prop();
 	std::string str = "numbers/0" + std::to_string(paddle->score);
 	const char* char_ptr = str.c_str();
-	score->Init(char_ptr, SCREEN_WIDTH_DEFAULT / 2 + 50 * side, 50, 0, 0, 0);
-	score->Draw();
+	score->Init(char_ptr, SCREEN_WIDTH_DEFAULT / 2 + 50 * side, 50, 0, 0, 0, dt);
+	score->Draw(dt);
 }

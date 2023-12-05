@@ -38,18 +38,18 @@ namespace Webfoot {
 		Prop();
 		static std::vector<Prop*> props;
 		/// Initialize the prop
-		void Init(const char* image_file, int x, int y, int velocity_x, int velocity_y, float step);
+		void Init(const char* file_name, int x, int y, int velocity_x, int velocity_y, float step, unsigned int dt);
 		/// Clean up the prop
 		void Deinit();
 		/// Make any changes for the given frame.  'dt' is the amount of time that
 		/// has passed since the last frame, in milliseconds.
 		virtual void Update(unsigned int dt);
 		/// Draw the prop.
-		void Draw();
+		void Draw(unsigned int dt);
 
 		//For collision
 		void Move(float x, float y);
-		void Teleport(float x, float y);
+		void Teleport(float x, float y, unsigned int dt);
 		//
 		virtual BOOLEAN OutBounds();
 		Point2F position;
@@ -57,7 +57,7 @@ namespace Webfoot {
 		Point2F tl;
 		float step;
 		/// Appearance of the prop.
-		Image* image;
+		Sprite* sprite;
 	protected:
 		/// Current position of the prop.
 		//Current velocity
@@ -71,14 +71,19 @@ namespace Webfoot {
 	class Ball : public Prop{
 	public:
 		Ball();
+		void Init(const char* file_name, int x, int y, int velocity_x, int velocity_y, float step, unsigned int dt,
+			Paddle *paddles[2], Scoreboard* scoreboard);
 		/// Bounce the ball
-		void Bounce(Paddle *paddles[2], Scoreboard* scoreboard);
-		void Update(unsigned int dt, Paddle *paddles[2], Scoreboard* scoreboard);
+		void Bounce(unsigned int dt);
+		void Update(unsigned int dt);
 		boolean HitPaddle(Paddle* paddle);
 		//hit paddle
 		boolean IsCollision(Paddle *paddles[2]);
 		//check with HitPaddle
 		//Next Update: in each 1pt step in line of movement
+
+		Paddle *paddles[2];
+		Scoreboard* scoreboard;
 	};
 	class Paddle : public Prop{
 	public:
@@ -118,9 +123,9 @@ namespace Webfoot {
 	class Scoreboard{
 	public:
 		Scoreboard();
-		void Init(Paddle* paddle1, Paddle* paddle2);
-		void Update();
-		void UpdateScore(Prop* &score, Paddle* paddle, int side);
+		void Init(Paddle* paddle1, Paddle* paddle2, unsigned int dt);
+		void Update(unsigned int dt);
+		void UpdateScore(Prop* &score, Paddle* paddle, int side, unsigned int dt);
 		Paddle* paddle1;
 		Paddle* paddle2;
 		Prop *score1;

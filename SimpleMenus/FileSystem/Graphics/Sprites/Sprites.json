@@ -1,0 +1,19 @@
+{
+
+    "paddle":
+    {
+        "Filename": "Sprites/paddle",
+        "FrameCount": 8,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "clock":
+    {
+        "Filename": "Sprites/clock",
+        "FrameCount": 8,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    }
+}
