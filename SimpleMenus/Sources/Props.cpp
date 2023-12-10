@@ -1,12 +1,9 @@
-#include "Frog.h"
-
-#include <random>
-#include <string>
-#include <array>
-#include <cstdio>
-#include <map>
-
 #include <Props.h>
+#include <string>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 using namespace Webfoot;
 
@@ -19,14 +16,14 @@ Prop::Prop()
 std::vector<Prop*> Prop::props;
 //------------------------------------------------------------------------------
 
-void Prop::Init(const char* file_name, int x, int y, int velocity_x, int velocity_y, float step, unsigned int dt)
+void Prop::Init(const char* file_name, float x, float y, float velocity_x, float velocity_y, float step,
+	float acceleration, float friction)
 {
 	Point2F center;
-	float w, h;
 	// Load the image of the ball.
 	sprite = frog_new Sprite();
 	sprite->Init("Sprites/Sprites", file_name);
-	size = sprite->SizeGet(dt);//width, height
+	size = sprite->SizeGet(0);//width, height
 
 	center = Point2F::Create(theScreen->SizeGet() / 2);
 	if (x == NULL){
@@ -38,18 +35,33 @@ void Prop::Init(const char* file_name, int x, int y, int velocity_x, int velocit
 	// Start the ball in the middle of the screen.
 	position = Point2F::Create(x, y);
 
-	w = size.x / 2;
-	h = size.y / 2;
+	Rescale(1);
 	
-	br = Point2F::Create(x + w, y + h);
-	tl = Point2F::Create(x - w, y - h);
-	
+	//For inertia
+	this->acceleration = acceleration;
+	this->friction = friction;
 
+	//Constant slide. If uses acceleration or friction this is iniatl velocity
 	velocity.x = velocity_x;
 	velocity.y = velocity_y;
-	this->step = step;
+	
+	this->step = step;//if acceleration is used, this is inital velocity
+	onScreen = FALSE;
+	actor = nullptr;
+	this->file_name = file_name;
 }
+void Prop::Rescale(float scale){
+	sprite->ScaleSet(Point2F::Create(scale, scale));
+	size = sprite->SizeGet(0);
+	float w, h;
+	w = size.x * scale / 2; //sprite->SizeGet(0) is too good for keeping track of scaled images >:(
+	h = size.y * scale / 2;
 
+	br = Point2F::Create(position.x + w, position.y + h);
+	tl = Point2F::Create(position.x - w, position.y - h);
+
+	radius = 0.5 * std::sqrt(std::pow(br.x - tl.x, 2) + std::pow(br.y - tl.y, 2));
+}
 //------------------------------------------------------------------------------
 
 void Prop::Deinit()
@@ -81,10 +93,10 @@ void Prop::Move(float x, float y){
 	tl.y += y;
 }
 
-void Prop::Teleport(float x, float y, unsigned int dt){
+void Prop::Teleport(float x, float y){
 	position.x = x;
 	position.y = y;
-	size = sprite->SizeGet(dt);
+	size = sprite->SizeGet(0);
 	float w;
 	float h;
 	w = size.x / 2;
@@ -92,7 +104,25 @@ void Prop::Teleport(float x, float y, unsigned int dt){
 	br = Point2F::Create(x + w, y + h);
 	tl = Point2F::Create(x - w, y - h);
 }
-BOOLEAN Prop::OutBounds() { return false; }
+
+std::vector<Prop*> Prop::IsCollision() {
+	std::vector<Prop*> collidedProps;
+	// Check all props for collision
+	for (Prop* prop : props) {
+		// Check if the current prop is equal to the provided obj and satisfies the condition
+		//DebugPrintf("Radius: %s\n", this->Radius(prop) ? "true" : "false");
+		//DebugPrintf("A Types: %s, %s\n", this->actor->type, prop->actor->type);
+		if (prop->actor->alive && prop != this && this->Radius(prop)) {
+			collidedProps.push_back(prop);  // Add the matching object to the vector
+		}
+	}
+
+	return collidedProps;
+}
+bool Prop::OutBounds() {
+	return (br.x < 0 || tl.x > SCREEN_WIDTH_DEFAULT ||
+		br.y < 0 || tl.y > SCREEN_HEIGHT_DEFAULT);
+}
 //------------------------------------------------------------------------------
 
 void Prop::Draw(unsigned int dt)
@@ -102,180 +132,330 @@ void Prop::Draw(unsigned int dt)
 	sprite->Draw();
 }
 
-
-Ball::Ball() {
-	sprite = NULL;
-	balls.push_back(this);
-
-}
-std::vector<Ball*> Ball::balls;
-void Ball::Init(const char* file_name, int x, int y, int velocity_x, int velocity_y, float step, unsigned int dt)
+void Prop::OnBoundCollision()
 {
-	
-	Prop::Init(file_name, x, y, velocity_x, velocity_y, step, dt);
-	/*
-	for (int i = 0; i < 2; ++i) {
-		this->paddles[i] = paddles[i];
-	}
-	this->scoreboard = scoreboard;
-	*/
-}
-
-//------------------------------------------------------------------------------
-void Ball::Update(unsigned int dt)
-{
-	//need mouse object
-	//need window object
-	//random values
-	Point2F old;
-	BOOLEAN x_state, y_state;
-	float x, y;
-
-	old = Point2F::Create(position.x, position.y);
-	x = step * velocity.x;
-	y = step * velocity.y;
-	Move(x, y);
-	Bounce(dt);
-	sprite->RotationSet(sprite->RotationGet() + 1);
-
-};
-//hit paddle
-
-void Ball::Bounce(unsigned int dt){
-	//wrap around
+	//Wrap around
 	if (position.x > SCREEN_WIDTH_DEFAULT) {
-		Teleport(0, position.y, dt);
+		Teleport(0, position.y);
 	}
 	else if (position.x < 0) {
-		Teleport(SCREEN_WIDTH_DEFAULT, position.y, dt);
+		Teleport(SCREEN_WIDTH_DEFAULT, position.y);
 	}
 
 	if (position.y > SCREEN_HEIGHT_DEFAULT) {
-		Teleport(position.x, 0, dt);
+		Teleport(position.x, 0);
 	}
 	else if (position.y < 0) {
-		Teleport(position.x, SCREEN_HEIGHT_DEFAULT, dt);
+		Teleport(position.x, SCREEN_HEIGHT_DEFAULT);
 	}
 
-};
-//------------------------------------------------------------------------------
-Paddle::Paddle()
-{
-	sprite = NULL;
-	score = 0;
 }
-boolean Paddle::OutBounds()
-{
+
+bool Prop::Radius(Prop* other){
+	// Calculate the distance between the centers of the two objects.
+	auto pos_a = this->position;
+	auto pos_b = other->position;
+	float distance = std::sqrt(std::pow(pos_b.x - pos_a.x, 2) + std::pow(pos_b.y - pos_a.y, 2));
+
+	// Check if the distance is less than the sum of the radii, indicating a collision.
+	//DebugPrintf("Distance: %f\n", distance);
+	//DebugPrintf("Sum: %f\m", this->radius + other->radius);
+	return distance < this->radius + other->radius;
+}
+
+bool Prop::AABB(Prop* other){
 	return (
-		br.x >= SCREEN_WIDTH_DEFAULT ||
-		tl.x <= 0 ||
-		br.y >= SCREEN_HEIGHT_DEFAULT ||
-		tl.y <= 0
+		br.x > other->tl.x &&
+		other->br.x > tl.x &&
+		br.y > other->tl.y &&
+		other->br.y > tl.y
 		);
 }
-//------------------------------------------------------------------------------
-Controls::Controls() {};
-PC::PC() {};
-void PC::Init(Prop* actor, std::map<KeyCode, std::array<int, 3>> inputs)
-{
-	this->actor = actor;
-	this->inputs = inputs;
 
+void Prop::Reset(){
+	//Move off screen
+	Teleport(-9999, -9999);
+	onScreen = false;
+	// Reset scale
+	Rescale(1);
+	Pool::ReturnProp(this);
+}
+//------------------------------------------------------------------------------
+Pool::Pool() {};
+std::vector<Prop*> Pool::pool;
+Prop* Pool::GrabProp(const char* file_name, float x, float y, float velocity_x, float velocity_y, float step,
+					float acceleration, float friction) {
+	// Check if there's an object with the same file_name in the pool
+	auto target = std::find_if(pool.begin(), pool.end(),
+		[file_name](const Prop* prop) {
+		return prop->file_name == file_name;
+	});
+
+	if (target == pool.end()) {
+		// No object with the same file_name found, create a new one
+		Prop* prop = new Prop();
+		prop->Init(file_name, x, y, velocity_x, velocity_y, step, acceleration, friction);
+		return prop;
+
+	}
+	else {
+		// Return the object with the same file_name from the pool
+		Prop* prop = *target;
+		//Take new values
+		prop->Teleport(x, y);
+		prop->velocity.x = velocity_x;
+		prop->velocity.y = velocity_y;
+		prop->step = step;
+
+		pool.erase(target); // Remove the object from the pool
+		return prop;
+	}
+}
+
+
+void Pool::ReturnProp(Prop* prop) {
+	pool.push_back(prop);
+}
+
+//------------------------------------------------------------------------------
+
+
+//
+Actor::Actor() {
+	actors.push_back(this);
+}
+std::vector<Actor*> Actor::actors;
+
+void Actor::Init(Prop* prop, int hp, const char* type){
+	this->prop = prop;
+	this->hp = hp;
+	this->max_hp = hp;
+	alive = true;
+	this->type = type;
+}
+void Actor::Update(unsigned int dt){
+	this->dt = dt;
+}
+void Actor::Reset(){
+	hp = max_hp;
+	alive = false;
+}
+PC::PC() {};
+Actor* PC::player1;
+void PC::Init(Prop* prop, std::map<KeyCode, std::array<int, 2>> inputs, int hp, const char* type, 
+	std::function<void(Prop*)> gun)
+{
+	Actor::Init(prop, hp, type);
+	this->prop = prop;
+	this->inputs = inputs;
+	score = 0;
+	canShoot = std::chrono::steady_clock::now();
+	this->gun = gun;
 }
 void PC::Update(unsigned int dt)
 {
+	Actor::Update(dt);
 	float x, y, step;
-	step = actor->step;
+	int direction;
+	step = prop->step;
+	Point2F* velocity = &(prop->velocity);
+	bool isThrusting = false;
+	float rotation = prop->sprite->RotationGet();
+	auto currentTime = std::chrono::steady_clock::now();
 	for (const auto &p : inputs)
 	{
 		p.first; //key
 		p.second;//value
 		if (theKeyboard->KeyPressed(p.first)){
-			switch (p.second[2]) {
+			switch (p.second[1]) {
 			case 0://move
+				/*
 				x = p.second[0] * step;
 				y = p.second[1] * step;
-				actor->Move(x, y);
-				if (actor->OutBounds()){ actor->Move(-x, -y); }
-				break;
-			case 1://rotate
-				if (auto *sprite = dynamic_cast<Sprite *>(actor->sprite))
-				{
-					sprite->RotationSet(sprite->RotationGet() + 5 * p.second[0]);
+				prop->Move(x, y);
+				*/
+				direction = p.second[0];
+				Thrust(prop, direction);
+				if (prop->OutBounds()){
+					prop->OnBoundCollision();
 				}
 				break;
-			case 2:
-				int num = 0;
+			case 1://rotate
+				if (auto *sprite = dynamic_cast<Sprite *>(prop->sprite))
+				{
+					sprite->RotationSet(rotation + 5 * p.second[0]);
+					rotation = prop->sprite->RotationGet();
+				}
 				break;
+			case 2://Fire
+				auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(currentTime - canShoot).count();
+				if (elapsedSeconds >= .05) {  // Can only shoot again after .05 second
+					canShoot = std::chrono::steady_clock::now();
+					gun(prop);//Fire bullet
+				}
+				break;
+
 			}
 		}
-		
+
+	}
+	//Friction effect
+	if (!(isThrusting) || isHurt){//Slow down after hit
+		velocity->x -= velocity->x * prop->friction;
+		velocity->y -= velocity->y * prop->friction;
+		}
+	// Move the prop based on the calculated speed and direction
+	float normalized = std::fmod(rotation, 360.0f);
+
+	// Ensure the result is positive
+	if (normalized < 0) {
+		normalized += 360.0f;
 	}
 
+	// Convert degrees to radians
+	float radians = (M_PI / 180.0) * normalized;
+
+	// Calculate the speed (you might want to adjust this based on your needs)
+
+
+	// Set velocity based on the direction
+	x = velocity->x * cos(radians);
+	y = velocity->y * -sin(radians);
+
+	prop->Move(x, y);
+	if (prop->OutBounds()){
+		prop->OnBoundCollision();
+	}
+	// React to getting hit
+	if (hitter){
+		isHurt = true;
+		hurtTime = std::chrono::steady_clock::now();
+		hitter = nullptr;
+	}
+	if (isHurt){
+		prop->sprite->Update(dt); //animate hurt
+		auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(currentTime - hurtTime).count();
+		if (elapsedSeconds >= 2) {  // Can only shoot again after .05 second
+			isHurt = false;
+			prop->sprite->AnimationSet("Sprites/Sprites", prop->file_name);
+		}
+	}
 }
+	
+	
 COM::COM() {};
-void COM::Init(Prop* actor, Ball* ball)
-{
-	this->actor = actor;
-	this->ball = ball;
-	this->prev = 0;
+
+void COM::Reset(){
+	update_funs.clear();
+	death_funs.clear();
+	hit_funs.clear();
+}
+
+void COM::WakeUp(){
+	hp = max_hp;
+	hunt = std::chrono::steady_clock::now();
+	patrol = std::chrono::steady_clock::now();
+	takeAim = std::chrono::steady_clock::now();
+	fire = std::chrono::steady_clock::now();
+	dodge = std::chrono::steady_clock::now();
+	live = std::chrono::steady_clock::now();
+
+	isHunt = false;
+	isPatrol = false;
+	isTakeAim = false;
+	isDodge = false;
 
 }
-void COM::Update(unsigned int dt)
+void COM::Init(Prop* prop, int hp, int score, const char* type)
 {
-	float y, step;
-	y = ball->position.y;
-	step = actor->step;
-	if (y > actor->position.y) {
-		y = 1;
+	Actor::Init(prop, hp, type);
+	this->score = score;
+	WakeUp();
+}
+void COM::Update(unsigned int dt){
+	Actor::Update(dt);
+	//Run update functions
+	for (const auto& func : update_funs) {
+		func(this);
 	}
-	else if (y < actor->position.y){
-		y = -1;
+	if (hitter){
+		for (const auto& func : hit_funs) {
+			func(this);
+		}
 	}
-	else {
-		y = 0;
+	if (hp <= 0 && alive){
+		for (const auto& func : death_funs) {
+			func(this);
+		}
+		prop->Reset();
+		Actor::Reset();
+		Reset();
 	}
-	this->prev = y;
-	y = step * y;
-	//Chance of taking random move
-	std::random_device seed;
-	std::mt19937 gen{ seed() }; // seed the generator
-	std::uniform_int_distribution<> dist(1, 100);
-	if (dist(gen) < 25) {//0 means will always chose right decision for testing purposes
-		actor->Move(0, prev);
+	hitter = nullptr;
+}
+//------------------------------------------------------------------------------
+//Just adjust to player stats
+Scoreboard::Scoreboard() {};
+void Scoreboard::Init(float x, float y){
+	char tempString[20];
+	UTF8Snprintf(tempString, 20, "Score: %d", 0);
+	scoreLabel = dynamic_cast<LabelWidget*>(theGUI->WidgetGetByPath(GUI_LAYER_NAME ".Score"));
+	tl = Point2F::Create(x, y);
+	std::vector<Prop*> hpShips;
+	
+}
+void Scoreboard::Deinit(){
+	if (scoreLabel){
+		SmartDeinitDelete(scoreLabel);
 	}
-	else {
-		actor->Move(0, y);
-	}
-	if (actor->OutBounds()){ actor->Move(0, -y); }
+}
+void Scoreboard::Update() {
+	Actor* player1 = PC::player1;
 
+	char tempString[20];
+	UTF8Snprintf(tempString, 20, "SCORE: %d", player1->points);
+	scoreLabel->TextSet(tempString);
+	
+	int hp = player1->hp;
+	scoreLabel->TextBoundsGet();
+	int length = hpShips.size();
+	Prop* ship;
+	float x, y;
+	while (length != hp) { //Make hp display match current 
+		if (length < hp){
+			x = tl.x + length * 40;
+			y = tl.y;
+			ship = Pool::GrabProp("ship", x, y, 0, 0, 0);
+			ship->Rescale(.7);
+			ship->sprite->RotationSet(270);
+			ship->actor = new COM();
+
+			COM* comPtr = static_cast<COM*>(ship->actor);
+			comPtr->Init(ship, 1, 0, "animation");
+			hpShips.push_back(ship);
+		}
+		else {
+			ship = hpShips.back();
+			hpShips.pop_back();
+			ship->actor->hp--;
+		}
+		length = hpShips.size();
+	}
 
 }
 //------------------------------------------------------------------------------
-Scoreboard::Scoreboard(){}
-void Scoreboard::Init(Paddle* paddle1, Paddle* paddle2, unsigned int dt)
-{
-	this->paddle1 = paddle1;
-	this->paddle2 = paddle2;
-
-	score1 = frog_new Prop();
-	score1->Init("numbers/00", SCREEN_WIDTH_DEFAULT / 2 - 50, 50, 0, 0, 0, dt);
-	score2 = frog_new Prop();
-	score2->Init("numbers/00", SCREEN_WIDTH_DEFAULT / 2 + 50, 50, 0, 0, 0, dt);
-}
-void Scoreboard::Update(unsigned int dt){
-	if (paddle1->score > 9 || paddle2->score > 9) {
-		paddle1->score = 0;
-		paddle2->score = 0;
+void Thrust(Webfoot::Prop* prop, int direction) {
+	Point2F* velocity = &(prop->velocity);
+	// Set velocity based on the direction
+	switch (direction) {
+	case -1:
+		velocity->x -= velocity->x * prop->friction + prop->step;
+		velocity->y -= velocity->y * prop->friction + prop->step;
+		break;
+	case 1:
+		velocity->x += prop->step * prop->acceleration;
+		velocity->y += prop->step * prop->acceleration;
 	}
-	UpdateScore(score1, paddle1, 1, dt);
-	UpdateScore(score2, paddle2, -1, dt);
+	
 }
-void Scoreboard::UpdateScore(Prop* &score, Paddle* paddle, int side, unsigned int dt){
-	score->Teleport(-100, -100, dt);//Into the backrooms
-	score = frog_new Prop();
-	std::string str = "numbers/0" + std::to_string(paddle->score);
-	const char* char_ptr = str.c_str();
-	score->Init(char_ptr, SCREEN_WIDTH_DEFAULT / 2 + 50 * side, 50, 0, 0, 0, dt);
-	score->Draw(dt);
-}
+

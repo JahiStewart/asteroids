@@ -29,7 +29,10 @@
     <ClInclude Include="..\MenuState.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="Props.h">
+    <ClInclude Include="..\Actions.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Props.h">
       <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
@@ -55,6 +58,9 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\Props.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actions.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>

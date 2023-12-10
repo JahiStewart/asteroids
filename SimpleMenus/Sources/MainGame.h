@@ -10,7 +10,7 @@
 #include <map>
 #include <array>
 
-#include "Props.h"
+#include "Actions.h"
 
 namespace Webfoot {
 
@@ -40,8 +40,9 @@ protected:
    virtual const char* GUILayerNameGet();
 
    /// The ball that bounces around the screen.
-   Paddle* paddle1;
-   PC* player1;
+   Population* roid_maker;
+   Population* enemy_maker;
+   Scoreboard* scoreboard;
 };
 
 MainGame* const theMainGame = &MainGame::instance;

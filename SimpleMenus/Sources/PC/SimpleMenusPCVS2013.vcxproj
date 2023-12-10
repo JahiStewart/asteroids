@@ -86,17 +86,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Actions.h" />
     <ClInclude Include="..\MainGame.h" />
     <ClInclude Include="..\MainMenu.h" />
     <ClInclude Include="..\MainUpdate.h" />
     <ClInclude Include="..\MenuState.h" />
-    <ClInclude Include="Props.h" />
+    <ClInclude Include="..\Props.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Actions.cpp" />
     <ClCompile Include="..\MainGame.cpp" />
     <ClCompile Include="..\MainMenu.cpp" />
     <ClCompile Include="..\MainUpdate.cpp" />

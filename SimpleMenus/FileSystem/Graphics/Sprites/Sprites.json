@@ -3,7 +3,7 @@
     "paddle":
     {
         "Filename": "Sprites/paddle",
-        "FrameCount": 8,
+        "FrameCount": 2,
         "FrameRate": 4,
         "Origin": "Center",
         "PlayType": "Loop"
@@ -11,7 +11,7 @@
     "clock":
     {
         "Filename": "Sprites/clock",
-        "FrameCount": 8,
+        "FrameCount": 2,
         "FrameRate": 4,
         "Origin": "Center",
         "PlayType": "Loop"
@@ -19,7 +19,7 @@
     "ship":
     {
         "Filename": "Sprites/ship",
-        "FrameCount": 8,
+        "FrameCount": 2,
         "FrameRate": 4,
         "Origin": "Center",
         "PlayType": "Loop"
@@ -27,7 +27,7 @@
     "debris1":
     {
         "Filename": "Sprites/debris1",
-        "FrameCount": 8,
+        "FrameCount": 2,
         "FrameRate": 4,
         "Origin": "Center",
         "PlayType": "Loop"
@@ -35,7 +35,31 @@
     "debris2":
     {
         "Filename": "Sprites/debris2",
-        "FrameCount": 8,
+        "FrameCount": 2,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "debris3":
+    {
+        "Filename": "Sprites/debris3",
+        "FrameCount": 2,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "debris4":
+    {
+        "Filename": "Sprites/debris4",
+        "FrameCount": 2,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "debris5":
+    {
+        "Filename": "Sprites/debris5",
+        "FrameCount": 2,
         "FrameRate": 4,
         "Origin": "Center",
         "PlayType": "Loop"
@@ -43,7 +67,55 @@
     "bullet":
     {
         "Filename": "Sprites/bullet",
-        "FrameCount": 8,
+        "FrameCount": 2,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "sphere":
+    {
+        "Filename": "Sprites/sphere",
+        "FrameCount": 2,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "1pts":
+    {
+        "Filename": "Sprites/1pts",
+        "FrameCount": 2,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "50pts":
+    {
+        "Filename": "Sprites/50pts",
+        "FrameCount": 2,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "10pts":
+    {
+        "Filename": "Sprites/10pts",
+        "FrameCount": 2,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "100pts":
+    {
+        "Filename": "Sprites/100pts",
+        "FrameCount": 2,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "500pts":
+    {
+        "Filename": "Sprites/500pts",
+        "FrameCount": 2,
         "FrameRate": 4,
         "Origin": "Center",
         "PlayType": "Loop"

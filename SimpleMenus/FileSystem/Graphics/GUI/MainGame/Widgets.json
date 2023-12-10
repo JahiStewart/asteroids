@@ -1,2 +1,13 @@
 {
+    "Children":[
+    {
+        "Name": "Score",
+        "Type": "Label",
+        "Font": "Arial",
+        "TextBounds": "30|30|300|300",
+        "TextAlignment": "TopLeft",
+        "TextKey": "Score"
+     }
+    ]
 }
+

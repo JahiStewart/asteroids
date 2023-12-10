@@ -4,3 +4,16 @@ is_inside = is inside bounds && push to on_field
 maker:
 if on_field < 10:
 	make asteroid
+
+dependcy
+Props --> Actions --> maingame
+
+points:
+500
+100
+50
+10
+1
+
+
+
