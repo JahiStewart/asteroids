@@ -112,9 +112,10 @@ namespace Webfoot {
 		*/
 	public:
 		Population();
-		void Init(int cap, std::function<void(Population*)> spawner);
+		void Init(int cap, std::function<void(Population*)> spawner, int spawn_rate);
 		int pop;
 		int cap;
+		int spawn_rate;
 		Pool* pool;
 		std::function<void(Population*)> spawner;
 		std::chrono::steady_clock::time_point startTime;
@@ -166,7 +167,6 @@ namespace Webfoot {
 		void Init(Prop* prop, int hp, int score, const char* type);
 		void Update(unsigned int dt);
 
-		int score;
 		//add entries after object creation
 		std::vector<std::function<void(Actor*)>> update_funs;//array of functions that runs every time it updates
 		std::vector<std::function<void(Actor*)>> death_funs;//array of functions that runs when it dies

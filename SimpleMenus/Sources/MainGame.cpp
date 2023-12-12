@@ -76,22 +76,21 @@ void MainGame::Init()
    Prop* ship = Pool::GrabProp("ship", NULL, NULL, 0, 0, .4, .9, .05);
    ship->actor = new PC();
    PC* pcPtr = static_cast<PC*>(ship->actor);//To use derived attributes
-   pcPtr->Init(ship, inputs, 3, "player", FireBullet);
+   pcPtr->Init(ship, inputs, 6, "player", FireBullet);
    PC::player1 = ship->actor;
 
    //Create Population handlers
    roid_maker = new Population();
-   roid_maker->Init(10, SpawnRoid);
+   roid_maker->Init(10, SpawnRoid, 7);
 
    enemy_maker = new Population();
-   enemy_maker->Init(15, SpawnEnemy);
+   enemy_maker->Init(2, SpawnEnemy, 30);
 
    // Throw some starting asteroids
    for (int i = 0; i < 7; ++i) {
 	   // Your code here
 	   SpawnRoid(roid_maker);
    }
-
    // Make scoreboard
    scoreboard = new Scoreboard();
    scoreboard->Init(50, 70);

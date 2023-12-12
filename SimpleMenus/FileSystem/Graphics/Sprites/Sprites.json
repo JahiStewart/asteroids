@@ -24,6 +24,22 @@
         "Origin": "Center",
         "PlayType": "Loop"
     },
+    "alien2":
+    {
+        "Filename": "Sprites/alien2",
+        "FrameCount": 2,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "Loop"
+    },
+    "death":
+    {
+        "Filename": "Sprites/death",
+        "FrameCount": 4,
+        "FrameRate": 4,
+        "Origin": "Center",
+        "PlayType": "OneShot"
+    },
     "debris1":
     {
         "Filename": "Sprites/debris1",

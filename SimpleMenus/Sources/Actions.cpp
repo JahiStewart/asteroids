@@ -55,11 +55,11 @@ void BasicCollison(Actor* actor) {
 		}
 		Actor* actor2 = prop2->actor;
 		COM* comPtr2 = static_cast<COM*>(actor2);
-		if (!(actor->type == actor2->type ||
-			(actor->type == "bullet" && comPtr->gunner == comPtr2 || actor2->type == "bullet" && comPtr2->gunner == comPtr) ||
-			(actor->type == "animation" || actor2->type == "animation") ||
-			((comPtr2 == PC::player1 && static_cast<PC*>(actor2)->isHurt) || (comPtr == PC::player1 && static_cast<PC*>(actor)->isHurt)
-			)
+		if (!(actor->type == actor2->type || //Same types
+			((actor->type == "bullet" && comPtr->gunner == comPtr2) || (actor2->type == "bullet" && comPtr2->gunner == comPtr)) ||//Is gunner's bullet
+			(actor->type == "animation" || actor2->type == "animation") ||// Is animation
+			((comPtr2 == PC::player1 && static_cast<PC*>(actor2)->isHurt) || (comPtr == PC::player1 && static_cast<PC*>(actor)->isHurt))||//Invicibility frames player
+			((actor->type == "enemy" && actor2->type == "roid") || (actor2->type == "enemy" && actor->type == "roid"))//Roid and enemies are friends
 			)){
 			/*
 			DebugPrintf("A Position: %f, %f\n", prop->position.x, prop->position.y);
@@ -135,6 +135,50 @@ void Hunt(Actor* actor) {
 
 void Patrol(Actor* actor) {
 	// Implementation for patrolling enemies
+	COM* comPtr = static_cast<COM*>(actor);
+	auto currentTime = std::chrono::steady_clock::now();
+	float x, y, step;
+	Prop* prop = actor->prop;
+	step = prop->step;
+	Point2F* velocity = &(prop->velocity);
+	float rotation = prop->sprite->RotationGet();
+	
+
+	auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(currentTime - comPtr->patrol).count();
+	if (elapsedSeconds > .125) {  // Switch mode
+		comPtr->patrol = std::chrono::steady_clock::now();
+		comPtr->isPatrol = !(comPtr->isPatrol);
+		FireBullet(actor->prop);//Add a bit of cool
+	}
+	if (comPtr->isPatrol) {  // Thrust every .5 seconds (constant for now)
+		Thrust(prop, 1);
+	}
+	else {//Apply friction
+		velocity->x -= velocity->x * prop->friction;
+		velocity->y -= velocity->y * prop->friction;
+	}
+	// Move the prop based on the calculated speed and direction
+	float normalized = std::fmod(rotation, 360.0f);
+
+	// Ensure the result is positive
+	if (normalized < 0) {
+		normalized += 360.0f;
+	}
+
+	// Convert degrees to radians
+	float radians = (M_PI / 180.0) * normalized;
+
+	// Calculate the speed (you might want to adjust this based on your needs)
+
+
+	// Set velocity based on the direction
+	x = velocity->x * cos(radians);
+	y = velocity->y * -sin(radians);
+
+	prop->Move(x, y);
+	if (prop->OutBounds()){
+		prop->OnBoundCollision();
+	}
 }
 
 void TakeAim(Actor* actor) {
@@ -166,16 +210,25 @@ void DecreasePop(Actor* actor){
 	}
 }
 //Animations--------------------------------------------------------------------
-void PointsPopup(Actor* actor) {
+bool DeathByPlayer(Actor* actor){
 	Prop* hitter = actor->hitter;
 	COM* hitterPtr = static_cast<COM*>(hitter->actor);
 	if (hitterPtr == nullptr || hitterPtr->gunner == nullptr){//not bullet
-		return;
+		return false;
 	}
 	PC* gunnerPtr = static_cast<PC*>(hitterPtr->gunner);
 	if (actor->hp > 0 || gunnerPtr->prop != PC::player1->prop){ //only
+		return false;
+	}
+	return true;
+}
+void PointsPopup(Actor* actor) {
+	if (!(DeathByPlayer(actor))){
 		return;
 	}
+	Prop* hitter = actor->hitter;
+	COM* hitterPtr = static_cast<COM*>(hitter->actor); //Bullet ptr
+	PC* gunnerPtr = static_cast<PC*>(hitterPtr->gunner);//Gunner ptr
 	float scale;
 	float duration;
 	float velocity_y;
@@ -211,6 +264,26 @@ void PointsPopup(Actor* actor) {
 
 	gunnerPtr->points += points;
 }
+void Explode(Actor* actor) {
+	if (!(DeathByPlayer)){
+		return;
+	}
+	Prop* hitter = actor->hitter;
+	COM* hitterPtr = static_cast<COM*>(hitter->actor); //Bullet ptr
+	PC* gunnerPtr = static_cast<PC*>(hitterPtr->gunner);//Gunner ptr
+	float x, y;
+	x = actor->prop->position.x;
+	y = actor->prop->position.y;
+	Prop* explosion = Pool::GrabProp("death", x, y, 0, 0, 1, .1);
+	explosion->actor = new COM();
+
+	COM* comPtr = static_cast<COM*>(explosion->actor);
+	comPtr->Init(explosion, 1, 0, "animation");
+	comPtr->duration = 2;
+	comPtr->update_funs.push_back(Animation);
+	comPtr->update_funs.push_back(Frames);
+
+}
 //--------------------------------------------------
 void SpawnRoid(Population* population){
 	// Randomly determine initial position outside bounds
@@ -234,7 +307,7 @@ void SpawnRoid(Population* population){
 
 	// Return a new asteroid
 	//random choose between 1-5 debris
-	std::string temp = "debris" + std::to_string(rand() % 5 + 1);
+	std::string temp = "debris" + std::to_string(rand() % 2 + 1);
 	const char* file_name = _strdup(temp.c_str());// Allocates memory and copies the string
 
 	int randomValue = rand() % 2;
@@ -247,22 +320,69 @@ void SpawnRoid(Population* population){
 	population->pop++;
 }
 void SpawnEnemy(Population* population){
+	float x, y, angle, velocity_x, velocity_y;
+	if (rand() % 2 == 0) {
+		// Spawn on the left or right side
+		x = (rand() % 2 == 0) ? -50.0f : SCREEN_WIDTH_DEFAULT + 50.0f;
+		y = static_cast<float>(rand() % SCREEN_HEIGHT_DEFAULT);
+		angle = (x < SCREEN_WIDTH_DEFAULT / 2) ? 180 : 0;
+		velocity_x = (x < SCREEN_WIDTH_DEFAULT / 2) ? 1 : -1;
+		velocity_y = 0;
+	}
+	else {
+		// Spawn on the top or bottom
+		x = static_cast<float>(rand() % SCREEN_WIDTH_DEFAULT);
+		y = (rand() % 2 == 0) ? -50.0f : SCREEN_HEIGHT_DEFAULT + 50.0f;
+		angle = (y < SCREEN_HEIGHT_DEFAULT / 2) ? 90 : 270;
+		velocity_x = 0;
+		velocity_y = (y < SCREEN_HEIGHT_DEFAULT / 2) ? 1 : -1;
+	}
+	Prop* ship = CreateEnemy("alien2", x, y, velocity_x * 7, velocity_y * 7, angle, 2, 500, .5, .1);
+	COM* comPtr = static_cast<COM*>(ship->actor);//To use derived attributes
+	comPtr->population = population;
+	population->pop++;
+}
+Prop* CreateEnemy(const char* file_name, float x, float y, float velocity_x, float velocity_y,
+	float angle, float step, int points, 
+	float acceleration, float friction) {
+	Prop* ship = Pool::GrabProp(file_name, x, y, velocity_x, velocity_y, step, acceleration, friction);
+	ship->sprite->RotationSet(angle);
+	ship->actor = new COM();
+	COM* comPtr = static_cast<COM*>(ship->actor);
+
+	// To use derived attributes
+	comPtr->Init(ship, 1, 100, "enemy");
+	comPtr->points = points;
+
+	// Add functions
+	comPtr->update_funs.push_back(Hunt);
+	comPtr->update_funs.push_back(Patrol);
+	comPtr->update_funs.push_back(TakeAim);
+	comPtr->update_funs.push_back(Fire);
+	comPtr->update_funs.push_back(BasicCollison);
+	comPtr->death_funs.push_back(DecreasePop);
+	comPtr->death_funs.push_back(Explode);
+	comPtr->death_funs.push_back(PointsPopup);
+
+	// Make obj ready
+	comPtr->WakeUp();
+
+	return ship;
 
 }
 Prop* CreateAsteroid(const char* file_name, float x, float y, float velocity_x, float velocity_y,
 	float angle, float scale, float spin, int points) {
 	//DebugPrintf("FILE: %s\n", fileName);
-	Prop* roid = Pool::GrabProp("debris1", x, y, velocity_x, velocity_y, 1);
+	Prop* roid = Pool::GrabProp(file_name, x, y, velocity_x, velocity_y, 1);
 	roid->Rescale(scale);
 
 	roid->actor = new COM();
 	COM* comPtr = static_cast<COM*>(roid->actor);
 
 	// To use derived attributes
-	comPtr->Init(roid, 1, 100, "roid");
+	comPtr->Init(roid, 1, points, "roid");
 	comPtr->angle = angle;
 	comPtr->spin = spin;
-	comPtr->points = points;
 
 	// Add functions
 	comPtr->update_funs.push_back(Asteroid);
@@ -301,15 +421,16 @@ void Frames(Actor* actor){
 }
 //------------------------------------------------------------------------------
 Population::Population() {};
-void Population::Init(int cap, std::function<void(Population*)> spawner) {
+void Population::Init(int cap, std::function<void(Population*)> spawner, int spawn_rate) {
 	this->cap = cap;
 	this->spawner = spawner;
+	this->spawn_rate = spawn_rate;
 }
 void Population::Update(){
 	auto currentTime = std::chrono::steady_clock::now();
 	auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime).count();
 
-	if (elapsedSeconds >= 4 && pop < cap){
+	if (elapsedSeconds >= spawn_rate && pop < cap){
 		spawner(this);
 		startTime = std::chrono::steady_clock::now();
 	}

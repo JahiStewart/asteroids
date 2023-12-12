@@ -206,7 +206,8 @@ Prop* Pool::GrabProp(const char* file_name, float x, float y, float velocity_x, 
 		prop->velocity.x = velocity_x;
 		prop->velocity.y = velocity_y;
 		prop->step = step;
-
+		prop->acceleration = acceleration;
+		prop->friction = friction;
 		pool.erase(target); // Remove the object from the pool
 		return prop;
 	}
@@ -276,9 +277,6 @@ void PC::Update(unsigned int dt)
 				*/
 				direction = p.second[0];
 				Thrust(prop, direction);
-				if (prop->OutBounds()){
-					prop->OnBoundCollision();
-				}
 				break;
 			case 1://rotate
 				if (auto *sprite = dynamic_cast<Sprite *>(prop->sprite))
@@ -289,7 +287,7 @@ void PC::Update(unsigned int dt)
 				break;
 			case 2://Fire
 				auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(currentTime - canShoot).count();
-				if (elapsedSeconds >= .05) {  // Can only shoot again after .05 second
+				if (elapsedSeconds >= .01 || true) {  // Can only shoot again after .01 second
 					canShoot = std::chrono::steady_clock::now();
 					gun(prop);//Fire bullet
 				}
@@ -366,10 +364,10 @@ void COM::WakeUp(){
 	isDodge = false;
 
 }
-void COM::Init(Prop* prop, int hp, int score, const char* type)
+void COM::Init(Prop* prop, int hp, int points, const char* type)
 {
 	Actor::Init(prop, hp, type);
-	this->score = score;
+	this->points = points;
 	WakeUp();
 }
 void COM::Update(unsigned int dt){

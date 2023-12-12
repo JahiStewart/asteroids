@@ -42,6 +42,10 @@ void UpdateScore(Webfoot::Actor* actor);//hits updates score
 void Animation(Webfoot::Actor* actor);//Moves prop and checks if duration has passed
 void Frames(Webfoot::Actor* actor);//Changes frames of prop 
 
+bool DeathByPlayer(Webfoot::Actor* actor);//Check if death by player ship
+void PointsPopup(Webfoot::Actor* actor);
+void Explode(Webfoot::Actor* actor);
+
 //Spawners for Population
 void SpawnRoid(Webfoot::Population* pop);
 void SpawnEnemy(Webfoot::Population* pop);
@@ -49,6 +53,10 @@ void SpawnEnemy(Webfoot::Population* pop);
 void DecreasePop(Webfoot::Actor* actor);//death_fun for enemies and asteriods
 Webfoot::Prop* CreateAsteroid(const char* fileName, float x, float y, float velocity_x, float velocity_y, 
 	float angle, float scale, float spin, int points);
+
+Webfoot::Prop* CreateEnemy(const char* file_name, float x, float y, float velocity_x, float velocity_y,
+	float angle, float step, int points,
+	float acceleration, float friction);
 //AddPoints (coming soon)
 //Update funs(will get own file soon):
 
